@@ -44,16 +44,33 @@ _current,congress_members.years_in_congress,congress_members.dw1_score from cong
 ress_members,votes where congress_members.id = votes.politician_id group by cong
 ress_members.name order by total_votes;
 --Release 2
-1.select count(*) as total_votes,
-  congress_members.name,
-  tb_1.name
-from
-congress_members,voters,votes, (SELECT votes.id as id, voters.first_name as name  FROM voters, votes WHERE voters.id = votes.voter_id ) as tb_1
-where
-congress_members.id = votes.politician_id
-and
-voters.id = votes.voter_id
-and
-tb_1.id = voters.id
+1.select count(*) as total_votes, congress_members.name,voters.first_name as voters,voters.gender
+from congress_members,voters,votes
+where congress_members.id = votes.politician_id
+and voters.id = votes.voter_id
+group by congress_members.name
+order by total_votes desc;
+2.select count(*) as total_votes, congress_members.name,congress_members.location,
+congress_members.grade_current from congress_members, votes
+where congress_members.id = votes.politician_id
+and congress_members.grade_current < 9
 group by congress_members.name
 order by total_votes;
+3.select count(*) as total_voters, voters.first_name,congress_members.location
+from voters,congress_members,votes
+where congress_members.id = votes.politician_id
+and voters.id = votes.voter_id
+group by voters.first_name
+order by total_voters desc
+limit 10
+4.select count(voter_id) as invalid_votes,voters.first_name, voters.last_name
+from voters,votes,congress_members
+where voters.id = votes.voter_id
+and congress_members.id = votes.politician_id
+group by voters.id
+having invalid_votes > 1;
+5.select count(voter_id) as total,voters.first_name
+from voters,votes
+where voters.id = votes.voter_id
+group by voters.id
+having count(voter_id) > 1;
